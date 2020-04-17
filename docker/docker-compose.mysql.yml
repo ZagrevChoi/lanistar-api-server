@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: lanistar-landing-mysql
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    ports:
+      - 3306:3306
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: ms-lanistar-landing-rootuser
+      MYSQL_DATABASE: ms-lanistar-landing
+      MYSQL_USER: ms-lanistar-landing-usr
+      MYSQL_PASSWORD: ms-lanistar-landing-pwd
+    networks:
+      - lanistar-landing-net
+      
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: lanistar-landing-phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+    restart: always
+    ports:
+      - 8080:80
+    volumes:
+      - /sessions
+    networks:
+      - lanistar-landing-net
+
+volumes:
+  db_data: {}
+networks:
+  lanistar-landing-net:

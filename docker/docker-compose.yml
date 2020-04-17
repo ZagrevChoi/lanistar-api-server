@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  postgres:
+    image: "postgres:12.1-alpine"
+    container_name: "lanistar-landing-postgres"
+    entrypoint: docker-entrypoint.sh -c "listen_addresses=*"
+    restart: 'always'
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    environment:
+      POSTGRES_USER: "lanistar"
+      POSTGRES_PASSWORD: "lanistar"
+      POSTGRES_DB: "lanistar_landing"
+    volumes:
+      - ./postgres.conf:/etc/postgresql/postgresql.conf
+    networks:
+      - lanistar-landing-net
+
+  adminer:
+    image: "dockette/adminer"
+    container_name: "lanistar-landing-adminer"
+    restart: "always"
+    environment:
+      MEMORY: 512M
+      UPLOAD: 4096M
+    ports:
+      - "8080:80"
+    networks:
+      - lanistar-landing-net
+
+volumes:
+  db_data: {}
+networks:
+  lanistar-landing-net:
