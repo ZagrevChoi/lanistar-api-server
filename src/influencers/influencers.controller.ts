@@ -693,36 +693,58 @@ export class InfluencersController {
     let temp = {};
     let number = 0;
     for(let i = 0; i < social[0].length;  i++ ) {
-      number += social[0][i].twitter_followers;
+      number +=social[0][i].instagram_followers;
     }
-    temp['twitter_total_followers'] = number;
-    temp['twitter_average_followers'] = Math.round(number/social[1]);
+    temp['instagram'] = {
+      total: this.kFormatter(number),
+      avg: this.kFormatter(number/social[1])
+    };
     number = 0;
-
     for(let i = 0; i < social[0].length;  i++ ) {
       number += social[0][i].fb_followers;
     }
-    temp['facebook_total_followers'] = number;
-    temp['facebook_average_followers'] = Math.round(number/social[1]);
+    temp['facebook'] = {
+      total: this.kFormatter(number),
+      avg: this.kFormatter(number/social[1])
+    };
     number = 0;
 
     for(let i = 0; i < social[0].length;  i++ ) {
       number += social[0][i].youtube_followers;
     }
-    temp['youtube_total_followers'] = number;
-    temp['youtube_average_followers'] = Math.round(number/social[1]);
+    temp['youtube'] = {
+      total: this.kFormatter(number),
+      avg: this.kFormatter(number/social[1])
+    };
     number = 0;
     for(let i = 0; i < social[0].length;  i++ ) {
-      number +=social[0][i].instagram_followers;
+      number += social[0][i].twitter_followers;
     }
-    temp['instagram_total_followers'] = number;
-    temp['instagram_average_followers'] = Math.round(number/social[1]);
+    temp['twitter'] = {
+      total: this.kFormatter(number),
+      avg: this.kFormatter(number/social[1])
+    };
     number = 0;
     for(let i = 0; i < social[0].length;  i++ ) {
       number +=social[0][i].tiktok_followers;
     }
-    temp['tiktok_total_followers'] = number;
-    temp['tiktok_average_followers'] = Math.round(number/social[1]);
+    temp['tiktok'] = {
+      total: this.kFormatter(number),
+      avg: this.kFormatter(number/social[1])
+    };
     return temp;
   }
+  
+  kFormatter(num) {
+    if (Math.abs(num) > 999 && Math.abs(num) < 10000000) {
+      const temp = (Math.abs(num/1000)).toFixed(1);
+      return Math.abs(num) > 999 ? Math.sign(num) * parseFloat(temp) + 'k' : Math.sign(num)*Math.abs(num)
+    } else if (Math.abs(num) >= 10000000) {
+      const temp = (Math.abs(num/10000000)).toFixed(1);
+      return Math.abs(num) > 999 ? Math.sign(num) * parseFloat(temp) + 'm' : Math.sign(num)*Math.abs(num)
+    } else {
+      return Math.round(num);
+    }
+  }
 }
+
