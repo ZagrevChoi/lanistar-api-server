@@ -195,7 +195,7 @@ export class InfluencersService {
       wheres.push(`"notAccepted" IS ${params.notAccepted ? "TRUE" : "FALSE"}`);
     }
     if (params.searchClue) {
-      wheres.push(`lower(concat("firstName", ' '  ,"lastName")) like '%${params.searchClue}%'`);
+      wheres.push(`(lower(concat("firstName", ' '  ,"lastName")) like '%${params.searchClue}%' or "email" like '%${params.searchClue}%' or "phoneNumber" like '${params.searchClue}%')`);
     }
     if (wheres.length > 0) {
       queryFilter.where = wheres.join(" AND ");
