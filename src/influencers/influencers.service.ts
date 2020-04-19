@@ -127,7 +127,7 @@ import {
        cache: false,
      };
      const wheres = [];
-     if (params.filter != '2' && params.autoComplete) {
+     if (params.filter != '2' && !params.autoComplete) {
        queryFilter.take = 20;
      }
      if (params.assignedto != '-1' && params.assignedto) {
