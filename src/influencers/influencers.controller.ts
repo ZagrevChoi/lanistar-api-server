@@ -736,10 +736,10 @@ export class InfluencersController {
   }
   
   kFormatter(num) {
-    if (Math.abs(num) > 999 && Math.abs(num) < 10000000) {
+    if (Math.abs(num) > 999 && Math.abs(num) < 1000000) {
       const temp = (Math.abs(num/1000)).toFixed(1);
       return Math.abs(num) > 999 ? Math.sign(num) * parseFloat(temp) + 'k' : Math.sign(num)*Math.abs(num)
-    } else if (Math.abs(num) >= 10000000) {
+    } else if (Math.abs(num) >= 1000000) {
       const temp = (Math.abs(num/1000000)).toFixed(1);
       return Math.abs(num) > 999 ? Math.sign(num) * parseFloat(temp) + 'm' : Math.sign(num)*Math.abs(num)
     } else {
