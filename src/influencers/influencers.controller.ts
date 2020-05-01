@@ -153,7 +153,7 @@ export class InfluencersController {
     if (!id) {
       throw new HttpException(
         {
-          errors: [ 
+          errors: [
             {
               description: "Inflencer id is missing",
               code: "id-is-required"
@@ -683,7 +683,7 @@ export class InfluencersController {
       toRebook,
       disappeared,
       signed,
-      notSigned  
+      notSigned
     };
   }
 
@@ -734,7 +734,7 @@ export class InfluencersController {
     };
     return temp;
   }
-  
+
   kFormatter(num) {
     if (Math.abs(num) > 999 && Math.abs(num) < 1000000) {
       const temp = (Math.abs(num/1000)).toFixed(1);
@@ -747,4 +747,3 @@ export class InfluencersController {
     }
   }
 }
-

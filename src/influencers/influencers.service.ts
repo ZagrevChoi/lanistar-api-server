@@ -2,14 +2,14 @@ import {
   HttpException, HttpStatus, Injectable, Logger
  } from "@nestjs/common";
  import { v4 as uuid } from "uuid";
- 
+
  import { LSApiErrorCodes } from "../common";
  import { InfluencerRepository } from "../data";
  import { Influencer } from "../models/entities";
  import { LSInfluencerContractStatus } from "../models/Influencer";
  import { Between } from "typeorm";
- 
- 
+
+
  export const generateRefCode = (length = 6) => {
    const chars = "QWERTYUIOPLKJHGFDSAZXCVBNM";
    let result = "";
@@ -18,13 +18,13 @@ import {
    }
    return result;
  };
- 
+
  @Injectable()
  export class InfluencersService {
    private readonly logger = new Logger("InfluencersService");
- 
+
    constructor(private readonly influencerRepository: InfluencerRepository) {}
- 
+
    async register(data: Partial<Influencer>): Promise<Influencer> {
      const exists = await this.influencerRepository.findOne({ email: data.email });
      if (exists) {
@@ -39,7 +39,7 @@ import {
          HttpStatus.BAD_REQUEST
        );
      }
- 
+
      // const existsPhone = await this.influencerRepository.findOne({ phoneNumber: data.phoneNumber });
      // if (existsPhone) {
      //   throw new HttpException(
@@ -53,7 +53,7 @@ import {
      //     HttpStatus.BAD_REQUEST
      //   );
      // }
- 
+
      const influencer: Partial<Influencer> = {
        firstName: data.firstName,
        lastName: data.lastName,
@@ -70,7 +70,7 @@ import {
        contractStatus: LSInfluencerContractStatus.WaitingToBeContacted,
        token: uuid()
      };
- 
+
      if (data.referredBy) {
        const referalUser = await this.influencerRepository.findOne({
          referralCode: data.referredBy
@@ -79,7 +79,7 @@ import {
          influencer.referredBy = referalUser.id;
        }
      }
- 
+
      let result: Influencer;
      try {
        result = await this.influencerRepository.save(influencer);
@@ -101,7 +101,7 @@ import {
      }
      return result;
    }
- 
+
    // async setStatus(influencer: Influencer, verified: boolean): Promise<boolean> {
    //   try {
    //     const result = await this.influencerRepository.save({
@@ -115,10 +115,10 @@ import {
    //   } catch (error) {
    //     this.logger.error(error);
    //   }
- 
+
    //   return false;
    // }
- 
+
    async list(params) {
      const queryFilter: any = {
        order: {
@@ -200,7 +200,7 @@ import {
      if (wheres.length > 0) {
        queryFilter.where = wheres.join(" AND ");
      }
- 
+
      if (params.order) {
        const splittedOrder = params.order.split("|");
        let sortFieldName = "createdAt";
@@ -226,44 +226,44 @@ import {
      const listResult = await this.influencerRepository.findAndCount(queryFilter);
      return listResult;
    }
- 
+
    async updateStatusByID(id, contractStatus) {
      return await this.influencerRepository.update(id, {
        contractStatus
      });
    }
- 
+
    async updateAssignedToByID(id, assignedto) {
      return await this.influencerRepository.update(id, {
        assignedto
      });
    }
- 
+
    async getReferredInfluencersCount(refferredBy) {
      const where = `"referredBy" = '${refferredBy}'`;
      return await this.influencerRepository.count(where ? { where }: {});
    }
- 
+
    async getById(id: string) {
      return await this.influencerRepository.findOne(id);
    }
- 
+
    async getByToken(token: string) {
      return await this.influencerRepository.findOne({ token });
    }
- 
+
    async getByEmail(email: string) {
      return await this.influencerRepository.findOne({ email });
    }
- 
+
    async getByPhone(phoneNumber: string) {
      return await this.influencerRepository.findOne({ phoneNumber });
    }
- 
+
    async listByReferredBy(refId: string) {
      return await this.influencerRepository.find({ referredBy: refId });
    }
- 
+
    async update(infData: Partial<Influencer>) {
      const result = await this.influencerRepository.save({
        ...infData,
@@ -271,7 +271,7 @@ import {
      });
      return result;
    }
- 
+
    async create(infData: Partial<Influencer>) {
      const result = await this.influencerRepository.save({
        ...infData,
@@ -282,18 +282,18 @@ import {
      });
      return result;
    }
- 
+
    async delete(id: string) {
      return await this.influencerRepository.delete(id);
    }
- 
+
    async getSocialCounts() {
      const data = await this.influencerRepository.findAndCount({
        contractStatus: Between(4,5)
      });
      return data;
    }
- 
+
    async getCount(countType) {
      let where = "";
      switch (countType) {
@@ -319,7 +319,7 @@ import {
          where = "\"contractStatus\" = '5'";
        break;
        case "notverified":
-         where = "\"status\" = '0'";
+         where = "\"contractStatus\" = '6'";
        break;
        default:
          break;
@@ -327,4 +327,3 @@ import {
      return await this.influencerRepository.count(where ? { where }: {});
    }
  }
- 
