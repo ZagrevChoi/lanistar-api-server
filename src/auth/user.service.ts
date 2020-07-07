@@ -29,12 +29,15 @@ export class UserService {
 
   public async login(req: LSLoginReq) {
     const user = await this.validate(req);
+    console.log(JSON.stringify(user));
     if (!user) {
       throw new HttpException("Login error", HttpStatus.FORBIDDEN);
     }
     const accessToken = signToken({
       fullname: user.fullname,
-      email: user.email
+      email: user.email,
+      role: user.role,
+      id: user.id
     });
     return {
       expiresIn: 3600,
@@ -43,8 +46,22 @@ export class UserService {
     };
   }
 
+  async getAssginUsers() {
+    const where = "role = 2";
+    return await this.userRepository.find(where ? { where }: { });
+  }
+
   async create(user: Partial<User>): Promise<User> {
     const entity = await this.userRepository.create(user);
     return await this.userRepository.save(entity);
+  }
+
+  async update(id ,user: Partial<User>): Promise<any> {
+    user.password = encryptPassword(user.password);
+    return await this.userRepository.update(id, user);
+  }
+
+  async delete(id): Promise<any> {
+    return await this.userRepository.delete(id);
   }
 }

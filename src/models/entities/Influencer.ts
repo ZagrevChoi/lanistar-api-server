@@ -83,6 +83,6 @@ export class Influencer {
   @Column({ default: 0, nullable: false })
   tiktok_followers: number;
 
-  @Column({ default: 0, nullable: false })
-  assignedto: number;
+  @Column({ length: 255, nullable: true })
+  assignedto: string;
 }

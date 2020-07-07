@@ -61,7 +61,7 @@ export const sendInfluencerActivateEmail = async (mailData: any) => {
   const subject = "New Registered Influencer Info";
   await sendEmail({
     from: config.sendGrid.emailAddresses.noreply,
-    to: config.env === "development" ? "orhanfirik@gmail.com" : "social@iamlanistar.com",
+    to: config.env === "development" ? "sitewiser@gmail.com" : "social@iamlanistar.com",
     subject,
     content: [{
       type: "text/html",
@@ -119,6 +119,28 @@ export const sendInvitationToInfluencer = async (influencerEmail: string, mailDa
     dynamicTemplateData: {
       ...mailData
     }
+  });
+};
+
+export const sendStatusChangeEmailToInfluencer: any = async (influencerEmail: string, mailData: any, contractStatus: any) => {
+  return new Promise(async (resolve) => {
+    let emailTemplateId = 's_' + contractStatus;
+    await sendEmail({
+      from: config.sendGrid.emailAddresses.info,
+      to: influencerEmail,
+      content: [{
+        type: "text/html",
+        value: "text/html"
+      }],
+      templateId: config.sendGrid.dynamicTemplates[`${ emailTemplateId }`],
+      dynamicTemplateData: {
+        ...mailData
+      }
+    }).then((result) => {
+      resolve(true);
+    }).catch((error) => {
+      resolve(false);
+    });
   });
 };
 

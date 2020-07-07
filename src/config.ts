@@ -54,7 +54,11 @@ const config = {
       influencerMagicLink: "d-1dc5046741054b7793a015fe51e479db",
       influencerRegister: "d-6cd6e9d0ab5e4c159fd6cf5335ca51ee",
       influencerInvite: "d-edfa9e63ddd844c69240d8e7fa1e2b09",
-      contactEmail: "d-47089cd0010e44b19b8a6ac629a42a95"
+      contactEmail: "d-47089cd0010e44b19b8a6ac629a42a95",
+      s_2: "d-87e3777b5c5745fa968c3989b6bcd496",
+      s_7: "d-60dd14a2385e4700ac826bc8f5febfcd",
+      s_8: "d-d572719ff5da4f11bcadfe67a0e8d372",
+      s_3: "d-cb7cb861fcc641f4b3352e059aadefc0",
     }
   },
   sentry: {

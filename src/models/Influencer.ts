@@ -39,7 +39,7 @@ export class LSInfluencer {
   twitter_followers: number;
   youtube_followers: number;
   tiktok_followers: number;
-  assignedto: number;
+  assignedto: string;
 }
 
 export class LSInfluencerRegisterReq {
@@ -249,7 +249,7 @@ export class LSInfluencerCreateReq {
   tiktok_followers: number;
 
   @Allow()
-  assignedto: number;
+  assignedto: string;
 }
 
 export class LSInfluencerCreateRes {
@@ -309,4 +309,5 @@ export class LSDashboardRes {
   disappeared: number;
   signed: number;
   notSigned: number;
+  responseawaiting: number;
 }

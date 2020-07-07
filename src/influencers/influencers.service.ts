@@ -1,14 +1,13 @@
 import {
   HttpException, HttpStatus, Injectable, Logger
  } from "@nestjs/common";
+ import { Between } from "typeorm";
  import { v4 as uuid } from "uuid";
 
  import { LSApiErrorCodes } from "../common";
  import { InfluencerRepository } from "../data";
  import { Influencer } from "../models/entities";
  import { LSInfluencerContractStatus } from "../models/Influencer";
- import { Between } from "typeorm";
-
 
  export const generateRefCode = (length = 6) => {
    const chars = "QWERTYUIOPLKJHGFDSAZXCVBNM";
@@ -124,39 +123,50 @@ import {
        order: {
          createdAt: "DESC"
        },
-       cache: false,
+       cache: false
      };
      const wheres = [];
-     if (params.filter != '2' && !params.autoComplete) {
+     if (params.role === 2) {
+      wheres.push(`"assignedto" = '${params.user_id}'`);
+     }
+     if (params.filter != 2 && !params.autoComplete) {
        queryFilter.take = 20;
      }
-     if (params.assignedto != '-1' && params.assignedto) {
-       wheres.push(`"assignedto" = ${params.assignedto}`);
+     if (params.assignedto === null) {
+        wheres.push(`"assignedto" IS NULL`);
+      } else if (params.assignedto != "-1" && params.assignedto != null && params.assignedto) {
+       wheres.push(`"assignedto" = '${params.assignedto}'`);
      }
      switch (params.filter) {
-       case '2':
+       case 2:
          wheres.push("\"referredBy\" IS NOT NULL AND \"referredBy\" != '0'");
          break;
-       case '3':
+       case 3:
          wheres.push("\"contractStatus\" = '0'");
          break;
-       case '4':
-         wheres.push("\"contractStatus\" = '1'");
+       case 4:
+         wheres.push("(\"contractStatus\" = '7' or \"contractStatus\" = '8')");
          break;
-       case '5':
+       case 5:
          wheres.push("\"contractStatus\" = '2'");
          break;
-       case '6':
+       case 6:
          wheres.push("\"contractStatus\" = '3'");
          break;
-       case '7':
+       case 7:
          wheres.push("\"contractStatus\" = '4'");
          break;
-       case '8':
+       case 8:
          wheres.push("\"contractStatus\" = '5'");
          break;
-       case '9':
-       wheres.push("\"status\" = '0'");
+       case 9:
+       wheres.push("\"contractStatus\" = '6'");
+       break;
+       case 10:
+       wheres.push("(\"phoneNumber\" = '' or \"email\" = '' or \"phoneNumber\" IS NULL or \"email\" IS NULL)");
+       break;
+       case 11:
+       wheres.push("\"contractStatus\" = '9'");
        break;
        default:
          break;
@@ -227,6 +237,22 @@ import {
      return listResult;
    }
 
+   async getAllInfluencers() {
+    const queryFilter: any = {
+      order: {
+        createdAt: "DESC"
+      },
+      cache: false
+    };
+    const wheres = [];
+
+    if (wheres.length > 0) {
+      queryFilter.where = wheres.join(" AND ");
+    }
+     const result = await this.influencerRepository.find(queryFilter);
+     return result;
+   }
+
    async updateStatusByID(id, contractStatus) {
      return await this.influencerRepository.update(id, {
        contractStatus
@@ -287,43 +313,56 @@ import {
      return await this.influencerRepository.delete(id);
    }
 
-   async getSocialCounts() {
-     const data = await this.influencerRepository.findAndCount({
-       contractStatus: Between(4,5)
-     });
+   async getSocialCounts(params) {
+     const queryFilter = {
+      contractStatus: Between(4,5),
+     };
+     if (params.role === 2) {
+      queryFilter['where'] = `"assignedto" ='${params.user_id}'`;
+     }
+     const data = await this.influencerRepository.findAndCount(queryFilter);
      return data;
    }
 
-   async getCount(countType) {
-     let where = "";
+   async getCount(countType, extrawhere) {
+    const queryFilter: any = {};
+     let where = [];
+     if (extrawhere) {
+       where.push(extrawhere);
+     }
      switch (countType) {
        case "referred":
-         where = "\"referredBy\" IS NOT NULL";
+         where.push("\"referredBy\" IS NOT NULL");
          break;
        case "waiting":
-         where = "\"contractStatus\" = '0'";
+         where.push("\"contractStatus\" = '0'");
          break;
        case "contacted":
-         where = "\"contractStatus\" = '1'";
+         where.push("(\"contractStatus\" = '7' or \"contractStatus\" = '8')");
        break;
        case "toRebook":
-         where = "\"contractStatus\" = '2'";
+         where.push("\"contractStatus\" = '2'");
        break;
        case "disappeared":
-         where = "\"contractStatus\" = '3'";
+         where.push("\"contractStatus\" = '3'");
        break;
        case "signed":
-         where = "\"contractStatus\" = '4'";
+         where.push("\"contractStatus\" = '4'");
        break;
        case "notSigned":
-         where = "\"contractStatus\" = '5'";
+         where.push("\"contractStatus\" = '5'");
        break;
        case "notverified":
-         where = "\"contractStatus\" = '6'";
+         where.push("\"contractStatus\" = '6'");
        break;
+       case "responseawaiting":
+          where.push("\"contractStatus\" = '9'")
        default:
          break;
      }
-     return await this.influencerRepository.count(where ? { where }: {});
+     if (where.length > 0) {
+      queryFilter.where = where.join(" AND ");
+     }
+     return await this.influencerRepository.count(queryFilter);
    }
  }

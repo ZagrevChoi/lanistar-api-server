@@ -8,7 +8,8 @@ import { LSInfluencerContractStatus } from "../models/Influencer";
 export const mockedUser = {
   fullname: "Test User",
   email: "test@test.com",
-  password: "securepassword"
+  password: "securepassword",
+  role: 1,
 };
 
 export const mockInfluencerReq = {
@@ -50,7 +51,7 @@ export const mockedInfluencer: Influencer = {
   instagram_followers: 0,
   youtube_followers: 0,
   tiktok_followers: 0,
-  assignedto: 0
+  assignedto: 'asdfasdfasdfas'
 };
 
 export async function createMockedUser() {
